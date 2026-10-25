@@ -28,10 +28,9 @@ wss.on('connection', (socket) => {
       const message = JSON.parse(data.toString())
       
       if (message.type === 'join' && message.payload?.roomId) {
-        // Leave previous room if exists
-        if (currentRoom) {
-          roomSockets[currentRoom] = roomSockets[currentRoom].filter(s => s !== socket)
-        }
+      if (currentRoom && currentRoom in roomSockets) {
+        roomSockets[currentRoom] = roomSockets[currentRoom].filter(s => s !== socket)
+      }
         
         // Join new room
         currentRoom = message.payload.roomId
@@ -63,7 +62,7 @@ wss.on('connection', (socket) => {
   })
 
   socket.on('close', () => {
-    if (currentRoom) {
+    if (currentRoom && currentRoom in roomSockets) {
       roomSockets[currentRoom] = roomSockets[currentRoom].filter(s => s !== socket)
     }
   })
